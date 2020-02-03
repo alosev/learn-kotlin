@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
-    <string name="btn_click_me">Click me</string>
-    <string name="txt_great">Great!</string>
+    <string name="app_name">My Notes</string>
+    <string name="note_title">Очень важная заметка</string>
+    <string name="note_text">Длинный предлинный текст важной заметки</string>
 </resources>
