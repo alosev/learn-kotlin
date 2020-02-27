@@ -2,4 +2,6 @@
     <string name="app_name">My Notes</string>
     <string name="note_title">Очень важная заметка</string>
     <string name="note_text">Длинный предлинный текст важной заметки</string>
+    <string name="note_title_hint">Заголовок</string>
+    <string name="note_text_hint">Тескт заметки</string>
 </resources>

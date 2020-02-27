@@ -3,19 +3,19 @@ package com.losev.myapp.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.losev.myapp.App
 import com.losev.myapp.domain.model.Note
-import com.losev.myapp.domain.usecases.NoteIteractor
 
-class MainViewModel(private val noteIteractor: NoteIteractor) : ViewModel() {
-    private val notesLiveData: MutableLiveData<List<Note>>
+class MainViewModel : ViewModel() {
+
+    private val notesLiveData: MutableLiveData<List<Note>> = MutableLiveData()
 
     init {
-        notesLiveData = MutableLiveData();
-        notesLiveData.value = noteIteractor.getNotes()
+        App.getNoteInteractor().getNotes().observeForever { notes ->
+            notesLiveData.value = notes
+        }
     }
 
-    public fun notesLiveData() : LiveData<List<Note>> {
-        return notesLiveData
-    }
+    fun notesLiveData(): LiveData<List<Note>> = notesLiveData
 
 }

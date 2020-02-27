@@ -1,111 +1,78 @@
 package com.losev.myapp.data.repository
 
-import android.content.Context
-import androidx.core.content.ContextCompat
-import com.losev.myapp.R
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.losev.myapp.domain.model.Note
 import com.losev.myapp.domain.repository.NoteRepository
+import java.util.*
 
-class NoteRepositoryListImpl(context: Context) : NoteRepository {
+class NoteRepositoryListImpl() : NoteRepository {
 
-    private val notes: List<Note>
+    private val notesLiveData: MutableLiveData<List<Note>> = MutableLiveData()
+    private val notes: MutableList<Note> = mutableListOf(
+            Note(
+                    UUID.randomUUID().toString(),
+                    "Заметка 1",
+                    "Текст заметки 1. Не очень длинный, но интересный",
+                    Note.Color.PINK
+            ),
+            Note(
+                    UUID.randomUUID().toString(),
+                    "Заметка 2",
+                    "Текст заметки 2. Не очень длинный, но интересный",
+                    Note.Color.PURPLE
+            ),
+            Note(
+                    UUID.randomUUID().toString(),
+                    "Заметка 3",
+                    "Текст заметки 3. Не очень длинный, но интересный",
+                    Note.Color.BLUE
+            ),
+            Note(
+                    UUID.randomUUID().toString(),
+                    "Заметка 4",
+                    "Текст заметки 4. Не очень длинный, но интересный",
+                    Note.Color.GREEN
+            ),
+            Note(
+                    UUID.randomUUID().toString(),
+                    "Заметка 5",
+                    "Текст заметки 5. Не очень длинный, но интересный",
+                    Note.Color.LIME
+            ),
+            Note(
+                    UUID.randomUUID().toString(),
+                    "Заметка 6",
+                    "Текст заметки 6. Не очень длинный, но интересный",
+                    Note.Color.YELLOW
+            )
+    )
 
     init {
-        notes = listOf(
-                Note(
-                        "Заметка 1",
-                        "Текст заметки 1. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.pink)
-                ),
-                Note(
-                        "Заметка 2",
-                        "Текст заметки 2. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.purple)
-                ),
-                Note(
-                        "Заметка 3",
-                        "Текст заметки 3. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.blue)
-                ),
-                Note(
-                        "Заметка 4",
-                        "Текст заметки 4. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.green)
-                ),
-                Note(
-                        "Заметка 5",
-                        "Текст заметки 5. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.lime)
-                ),
-                Note(
-                        "Заметка 6",
-                        "Текст заметки 6. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.yellow)
-                ),
-                Note(
-                        "Заметка 1",
-                        "Текст заметки 1. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.pink)
-                ),
-                Note(
-                        "Заметка 2",
-                        "Текст заметки 2. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.purple)
-                ),
-                Note(
-                        "Заметка 3",
-                        "Текст заметки 3. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.blue)
-                ),
-                Note(
-                        "Заметка 4",
-                        "Текст заметки 4. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.green)
-                ),
-                Note(
-                        "Заметка 5",
-                        "Текст заметки 5. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.lime)
-                ),
-                Note(
-                        "Заметка 6",
-                        "Текст заметки 6. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.yellow)
-                ),
-                Note(
-                        "Заметка 1",
-                        "Текст заметки 1. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.pink)
-                ),
-                Note(
-                        "Заметка 2",
-                        "Текст заметки 2. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.purple)
-                ),
-                Note(
-                        "Заметка 3",
-                        "Текст заметки 3. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.blue)
-                ),
-                Note(
-                        "Заметка 4",
-                        "Текст заметки 4. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.green)
-                ),
-                Note(
-                        "Заметка 5",
-                        "Текст заметки 5. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.lime)
-                ),
-                Note(
-                        "Заметка 6",
-                        "Текст заметки 6. Не очень длинный, но интересный",
-                        ContextCompat.getColor(context, R.color.yellow)
-                )
-        )
+        updateLiveData()
     }
 
-    override fun getNotes(): List<Note> {
-        return notes
+    override fun getNotes(): LiveData<List<Note>> {
+        return notesLiveData
+    }
+
+    override fun saveNote(note: Note) {
+        addOrUpdateNote(note)
+        updateLiveData()
+    }
+
+    private fun addOrUpdateNote(note: Note) {
+        for (i in notes.indices) {
+            if (notes[i] == note) {
+                notes[i] = note
+                return
+            }
+        }
+
+        notes.add(note)
+    }
+
+    private fun updateLiveData() {
+        notesLiveData.value = notes
     }
 }
