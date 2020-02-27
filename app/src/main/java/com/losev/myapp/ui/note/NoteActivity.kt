@@ -12,26 +12,32 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.losev.myapp.R
 import com.losev.myapp.domain.model.Note
+import com.losev.myapp.ui.base.BaseActivity
+import com.losev.myapp.ui.base.BaseViewModel
 import kotlinx.android.synthetic.main.activity_note.*
 import kotlinx.android.synthetic.main.appbar.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NoteActivity : AppCompatActivity() {
+class NoteActivity : BaseActivity<Note?, NoteViewState>() {
 
     companion object {
-        const val EXTRA_NOTE = "EXTRA_NOTE"
+        const val EXTRA_NOTE_ID = "EXTRA_NOTE_ID"
         const val DATE_TIME_FORMAT = "dd.MM.yy HH:mm"
 
-        fun create(context: Context, note: Note? = null) {
+        fun create(context: Context, noteId: String? = null) {
             val intent = Intent(context, NoteActivity::class.java)
-            intent.putExtra(EXTRA_NOTE, note)
+            intent.putExtra(EXTRA_NOTE_ID, noteId)
             context.startActivity(intent);
         }
     }
 
-    private lateinit var viewModel: NoteViewModel;
+    override val viewModel: NoteViewModel by lazy {
+        ViewModelProvider(this).get(NoteViewModel::class.java)
+    }
+    override val layoutRes = R.layout.activity_note
     private var note: Note? = null;
+
     private val TextChangeListener = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
             saveNote()
@@ -43,47 +49,47 @@ class NoteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_note)
-        setSupportActionBar(toolbar)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Новая заметка"
 
-        note = intent.getParcelableExtra(EXTRA_NOTE);
+        val noteId = intent.getStringExtra(EXTRA_NOTE_ID);
+        noteId?.let {
+            viewModel.load(noteId)
+        }
 
-        supportActionBar?.title = note?.let {
-            SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(it.lastChange)
-        } ?: "Новая заметка"
-
-        initViewModel()
         initView()
     }
 
-    private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
-    }
-
     private fun initView() {
-        note?.let { note ->
-            note_title.setText(note.title)
-            note_text.setText(note.text)
-            val color = convertColor(note.color)
-            toolbar.setBackgroundColor(ContextCompat.getColor(this, color))
-        }
-
         note_title.addTextChangedListener(TextChangeListener)
         note_text.addTextChangedListener(TextChangeListener)
     }
 
-    private fun saveNote() {
-        Handler().post {
-            note = note?.copy(
-                    title = note_title.text.toString(),
-                    text = note_text.text.toString(),
-                    lastChange = Date()
-            ) ?: createNewNote()
+    override fun renderData(data: Note?) {
+        note = data;
+        renderNote()
+    }
 
-            note?.let {
-                viewModel.save(it)
-            }
+    private fun renderNote(){
+        note?.let {note ->
+            note_title.setText(note.title)
+            note_text.setText(note.text)
+            val color = convertColor(note.color)
+            toolbar.setBackgroundColor(ContextCompat.getColor(this, color))
+            supportActionBar?.title = SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(note.lastChange)
+        }
+    }
+
+    private fun saveNote() {
+        note = note?.copy(
+                title = note_title.text.toString(),
+                text = note_text.text.toString(),
+                lastChange = Date()
+        ) ?: createNewNote()
+
+        note?.let {
+            viewModel.save(it)
         }
     }
 
