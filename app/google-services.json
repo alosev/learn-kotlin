@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "598990455502",
+    "firebase_url": "https://notes-app-c56f4.firebaseio.com",
+    "project_id": "notes-app-c56f4",
+    "storage_bucket": "notes-app-c56f4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:598990455502:android:170afa701055b8698f069f",
+        "android_client_info": {
+          "package_name": "com.losev.myapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "598990455502-p72jrvkoqqltrvdrud7uvd64fvgcv96t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.losev.myapp",
+            "certificate_hash": "cb2fca40b526cecc616e6cec65e71ddfc2789d32"
+          }
+        },
+        {
+          "client_id": "598990455502-lfcvdhcaeiiu4o9adkpp8f366vv5mm6d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1CzK-uVvYaiAQgywymOt4Nvrf156IROo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "598990455502-lfcvdhcaeiiu4o9adkpp8f366vv5mm6d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
