@@ -38,13 +38,13 @@ class NoteAdapter(val onItemViewClick: ((note: Note) -> Unit)? = null) : Recycle
 
             setCardBackgroundColor(ContextCompat.getColor(this.context, color))
 
-            this.setOnClickListener{
+            this.setOnClickListener {
                 onItemViewClick?.invoke(note)
             }
         }
-        
+
         private fun convertColor(color: Note.Color): Int {
-            return when(color){
+            return when (color) {
                 Note.Color.WHITE -> R.color.white
                 Note.Color.YELLOW -> R.color.yellow
                 Note.Color.GREEN -> R.color.green

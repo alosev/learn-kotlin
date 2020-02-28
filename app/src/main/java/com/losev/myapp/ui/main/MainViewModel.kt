@@ -1,9 +1,6 @@
 package com.losev.myapp.ui.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import com.losev.myapp.App
 import com.losev.myapp.domain.model.Note
 import com.losev.myapp.domain.model.NoteResult

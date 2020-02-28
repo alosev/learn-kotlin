@@ -3,17 +3,14 @@ package com.losev.myapp.ui.note
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.losev.myapp.R
 import com.losev.myapp.domain.model.Note
 import com.losev.myapp.ui.base.BaseActivity
-import com.losev.myapp.ui.base.BaseViewModel
 import kotlinx.android.synthetic.main.activity_note.*
 import kotlinx.android.synthetic.main.appbar.*
 import java.text.SimpleDateFormat
@@ -71,8 +68,8 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
         renderNote()
     }
 
-    private fun renderNote(){
-        note?.let {note ->
+    private fun renderNote() {
+        note?.let { note ->
             note_title.setText(note.title)
             note_text.setText(note.text)
             val color = convertColor(note.color)
