@@ -4,9 +4,9 @@ import android.app.Application
 import com.losev.myapp.data.repository.NoteRepositoryFirebaseImpl
 import com.losev.myapp.domain.usecases.NoteInteractor
 
-class App: Application() {
+class App : Application() {
 
-    companion object Factory{
+    companion object Factory {
         private val noteInteractor = NoteInteractor(NoteRepositoryFirebaseImpl())
         fun getNoteInteractor() = noteInteractor
     }
