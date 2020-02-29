@@ -14,8 +14,10 @@ import org.jetbrains.anko.dip
 class ColorCircleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
     companion object {
-        @Dimension(unit = Dimension.DP) private const val defRadiusDp = 16
-        @Dimension(unit = Dimension.DP) private const val defStrokeWidthDp = 1
+        @Dimension(unit = Dimension.DP)
+        private const val defRadiusDp = 16
+        @Dimension(unit = Dimension.DP)
+        private const val defStrokeWidthDp = 1
     }
 
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -28,7 +30,8 @@ class ColorCircleView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     private var center: Pair<Float, Float> = 0f to 0f
 
-    @Dimension(unit = Dimension.PX) var radius: Float = dip(defRadiusDp).toFloat()
+    @Dimension(unit = Dimension.PX)
+    var radius: Float = dip(defRadiusDp).toFloat()
 
     @ColorRes
     var fillColorRes: Int = R.color.white
@@ -44,7 +47,8 @@ class ColorCircleView @JvmOverloads constructor(context: Context, attrs: Attribu
             strokePaint.color = ContextCompat.getColor(context, value)
         }
 
-    @Dimension(unit = Dimension.PX) var strokeWidth: Float = dip(defStrokeWidthDp).toFloat()
+    @Dimension(unit = Dimension.PX)
+    var strokeWidth: Float = dip(defStrokeWidthDp).toFloat()
         set(value) {
             field = value
             strokePaint.strokeWidth = value
@@ -70,7 +74,7 @@ class ColorCircleView @JvmOverloads constructor(context: Context, attrs: Attribu
 
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        center = measuredWidth/2f to measuredHeight/2f
+        center = measuredWidth / 2f to measuredHeight / 2f
         super.onLayout(changed, left, top, right, bottom)
     }
 

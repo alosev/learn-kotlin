@@ -5,20 +5,45 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import com.firebase.ui.auth.AuthUI
 import com.losev.myapp.R
 import com.losev.myapp.domain.model.NoAuthException
 import kotlinx.android.synthetic.main.appbar.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.consumeEach
+import kotlin.coroutines.CoroutineContext
 
-abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
+abstract class BaseActivity<T> : AppCompatActivity(), CoroutineScope {
 
     companion object {
         private const val SIGN_CODE = 333
     }
 
-    abstract val viewModel: BaseViewModel<T, S>
+    override val coroutineContext: CoroutineContext by lazy {
+        Job() + Dispatchers.Main
+    }
+
+    private lateinit var dataJob: Job
+    private lateinit var errorJob: Job
+
+    abstract val viewModel: BaseViewModel<T>
     abstract val layoutRes: Int?
+
+    override fun onStart() {
+        super.onStart()
+
+        dataJob = launch {
+            viewModel.getViewState().consumeEach { data ->
+                renderData(data)
+            }
+        }
+
+        errorJob = launch {
+            viewModel.getErrorChannel().consumeEach { error ->
+                renderError(error)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,27 +54,6 @@ abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
 
         toolbar?.let {
             setSupportActionBar(it)
-        }
-
-        viewModel.getViewState().observe(this, object : Observer<S> {
-            override fun onChanged(state: S?) {
-                state ?: return
-
-                state.error?.let { error ->
-                    renderError(error)
-                    return
-                }
-
-                renderData(state.data)
-            }
-        })
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == SIGN_CODE && resultCode != Activity.RESULT_OK) {
-            finish()
         }
     }
 
@@ -83,5 +87,24 @@ abstract class BaseActivity<T, S : BaseViewState<T>> : AppCompatActivity() {
                 .build()
 
         startActivityForResult(intent, SIGN_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == SIGN_CODE && resultCode != Activity.RESULT_OK) {
+            finish()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        errorJob.cancel()
+        dataJob.cancel()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        coroutineContext.cancel()
     }
 }

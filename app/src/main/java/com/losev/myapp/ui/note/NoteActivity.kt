@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.losev.myapp.R
 import com.losev.myapp.domain.model.Note
+import com.losev.myapp.domain.model.NoteData
 import com.losev.myapp.extensions.getColor
 import com.losev.myapp.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_note.*
@@ -17,7 +18,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
+class NoteActivity : BaseActivity<NoteData>() {
 
     companion object {
         const val EXTRA_NOTE_ID = "EXTRA_NOTE_ID"
@@ -49,6 +50,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Новая заметка"
+        toolbar.setBackgroundColor(color.getColor(this))
 
         val noteId = intent.getStringExtra(EXTRA_NOTE_ID);
         noteId?.let {
@@ -63,7 +65,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
         addTextChangeListener()
     }
 
-    override fun renderData(data: NoteViewState.Data) {
+    override fun renderData(data: NoteData) {
         if (data.isDeleted) finish()
 
         note = data.note;
@@ -76,6 +78,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
                 removeTextChangeListener()
                 note_title.setText(note.title)
                 note_text.setText(note.text)
+                color = note.color
                 addTextChangeListener()
             }
             toolbar.setBackgroundColor(note.color.getColor(this))

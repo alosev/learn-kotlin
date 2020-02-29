@@ -50,6 +50,9 @@ dependencies {
     implementation 'org.koin:koin-android:1.0.1'
     implementation 'org.koin:koin-android-viewmodel:1.0.1'
 
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.0'
+
     kapt 'androidx.lifecycle:lifecycle-compiler:2.2.0'
 
     testImplementation 'junit:junit:4.13'

@@ -17,7 +17,8 @@ class ColorPickerView : LinearLayout {
         private const val PALETTE_ANIMATION_DURATION = 150L
         private const val HEIGHT = "height"
         private const val SCALE = "scale"
-        @Dimension(unit = Dimension.DP) private const val COLOR_VIEW_PADDING = 8
+        @Dimension(unit = Dimension.DP)
+        private const val COLOR_VIEW_PADDING = 8
     }
 
     var onColorClickListener: (color: Note.Color) -> Unit = { }
