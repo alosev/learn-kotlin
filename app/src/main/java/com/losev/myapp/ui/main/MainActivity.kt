@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.appbar.*
 import org.jetbrains.anko.alert
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
+class MainActivity : BaseActivity<List<Note>?>() {
 
     companion object {
         fun start(context: Context) = Intent(context, MainActivity::class.java).apply {
@@ -59,7 +59,7 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_logout -> showLogoutDialog().let { true }
-        else -> false
+        else -> super.onOptionsItemSelected(item)
     }
 
     fun showLogoutDialog() {

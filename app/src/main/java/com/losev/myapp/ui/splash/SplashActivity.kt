@@ -7,7 +7,7 @@ import com.losev.myapp.ui.base.BaseActivity
 import com.losev.myapp.ui.main.MainActivity
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
+class SplashActivity : BaseActivity<Boolean?>() {
 
     companion object {
         fun start(context: Context) = Intent(context, SplashActivity::class.java).apply {

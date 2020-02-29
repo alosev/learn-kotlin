@@ -3,15 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_palette"
-        android:icon="@drawable/ic_palette_black_24dp"
-        android:iconTint="@android:color/white"
+        android:icon="@drawable/ic_palette_white_24dp"
         android:title="Изменить цвет"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_delete"
-        android:icon="@drawable/ic_delete_black_24dp"
-        android:iconTint="@android:color/white"
+        android:icon="@drawable/ic_delete_white_24dp"
         android:title="Удалить"
         app:showAsAction="ifRoom" />
 </menu>
