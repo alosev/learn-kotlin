@@ -5,18 +5,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
 import android.view.MenuItem
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import com.losev.myapp.R
 import com.losev.myapp.domain.model.Note
+import com.losev.myapp.extensions.getColor
 import com.losev.myapp.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_note.*
-import kotlinx.android.synthetic.main.appbar.*
+import org.jetbrains.anko.alert
+import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NoteActivity : BaseActivity<Note?, NoteViewState>() {
+class NoteActivity : BaseActivity<NoteViewState.Data, NoteViewState>() {
 
     companion object {
         const val EXTRA_NOTE_ID = "EXTRA_NOTE_ID"
@@ -29,11 +30,10 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
         }
     }
 
-    override val viewModel: NoteViewModel by lazy {
-        ViewModelProvider(this).get(NoteViewModel::class.java)
-    }
+    override val viewModel: NoteViewModel by viewModel()
     override val layoutRes = R.layout.activity_note
-    private var note: Note? = null;
+    private var note: Note? = null
+    private var color: Note.Color = Note.Color.WHITE
 
     private val TextChangeListener = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
@@ -55,25 +55,30 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
             viewModel.load(noteId)
         }
 
-        initView()
+        color_picker.onColorClickListener = { newColor ->
+            color = newColor
+            saveNote()
+        }
+
+        addTextChangeListener()
     }
 
-    private fun initView() {
-        note_title.addTextChangedListener(TextChangeListener)
-        note_text.addTextChangedListener(TextChangeListener)
+    override fun renderData(data: NoteViewState.Data) {
+        if (data.isDeleted) finish()
+
+        note = data.note;
+        renderNote(data.isLoaded)
     }
 
-    override fun renderData(data: Note?) {
-        note = data;
-        renderNote()
-    }
-
-    private fun renderNote() {
+    private fun renderNote(isLoaded: Boolean) {
         note?.let { note ->
-            note_title.setText(note.title)
-            note_text.setText(note.text)
-            val color = convertColor(note.color)
-            toolbar.setBackgroundColor(ContextCompat.getColor(this, color))
+            if (isLoaded) {
+                removeTextChangeListener()
+                note_title.setText(note.title)
+                note_text.setText(note.text)
+                addTextChangeListener()
+            }
+            toolbar.setBackgroundColor(note.color.getColor(this))
             supportActionBar?.title = SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(note.lastChange)
         }
     }
@@ -82,7 +87,8 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
         note = note?.copy(
                 title = note_title.text.toString(),
                 text = note_text.text.toString(),
-                lastChange = Date()
+                lastChange = Date(),
+                color = color
         ) ?: createNewNote()
 
         note?.let {
@@ -90,26 +96,40 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
         }
     }
 
-    private fun createNewNote() = Note(UUID.randomUUID().toString(), note_title.text.toString(), note_text.text.toString())
+    private fun createNewNote() = Note(UUID.randomUUID().toString(), note_title.text.toString(), note_text.text.toString(), color)
 
-    private fun convertColor(color: Note.Color): Int {
-        return when (color) {
-            Note.Color.WHITE -> R.color.white
-            Note.Color.YELLOW -> R.color.yellow
-            Note.Color.GREEN -> R.color.green
-            Note.Color.BLUE -> R.color.blue
-            Note.Color.LIME -> R.color.lime
-            Note.Color.PURPLE -> R.color.purple
-            Note.Color.PINK -> R.color.pink
-        }
+    private fun addTextChangeListener() {
+        note_title.addTextChangedListener(TextChangeListener)
+        note_text.addTextChangedListener(TextChangeListener)
     }
 
+    private fun removeTextChangeListener() {
+        note_title.removeTextChangedListener(TextChangeListener)
+        note_text.removeTextChangedListener(TextChangeListener)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?) = menuInflater.inflate(R.menu.note, menu).let { true }
+
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        android.R.id.home -> {
-            onBackPressed()
-            true
-        }
+        android.R.id.home -> onBackPressed().let { true }
+        R.id.menu_delete -> deleteNote().let { true }
+        R.id.menu_palette -> togglePalette().let { true }
         else -> super.onOptionsItemSelected(item)
     }
 
+    private fun deleteNote() {
+        alert {
+            message = "Удалить?"
+            positiveButton("Да") { viewModel.delete() }
+            negativeButton("Нет") { dialog -> dialog.dismiss() }
+        }.show()
+    }
+
+    private fun togglePalette() {
+        if (color_picker.isOpen) {
+            color_picker.close()
+        } else {
+            color_picker.open()
+        }
+    }
 }

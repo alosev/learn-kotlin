@@ -1,35 +1,43 @@
 package com.losev.myapp.ui.note
 
-import androidx.lifecycle.Observer
-import com.losev.myapp.App
 import com.losev.myapp.domain.model.Note
 import com.losev.myapp.domain.model.NoteResult
+import com.losev.myapp.domain.usecases.NoteInteractor
 import com.losev.myapp.ui.base.BaseViewModel
 
-class NoteViewModel : BaseViewModel<Note?, NoteViewState>() {
+class NoteViewModel(private val noteInteractor: NoteInteractor) : BaseViewModel<NoteViewState.Data, NoteViewState>() {
 
-    private val noteInteractor = App.getNoteInteractor()
-    private var pendingNote: Note? = null;
+    private val pendingNote: Note?
+        get() = viewStateLiveData.value?.data?.note
 
     init {
         viewStateLiveData.value = NoteViewState()
     }
 
     fun save(note: Note) {
-        pendingNote = note;
+        viewStateLiveData.value = NoteViewState(data = NoteViewState.Data(note))
     }
 
-    fun load(id: String) {
-        noteInteractor.getNote(id).observeForever(object : Observer<NoteResult> {
-            override fun onChanged(result: NoteResult?) {
-                result ?: return
-
-                when (result) {
-                    is NoteResult.Success<*> -> viewStateLiveData.value = NoteViewState(note = result.data as? Note)
-                    is NoteResult.Error -> viewStateLiveData.value = NoteViewState(error = result.error)
+    fun load(noteId: String) {
+        noteInteractor.getNote(noteId).observeForever { result ->
+            result?.let {
+                viewStateLiveData.value = when (it) {
+                    is NoteResult.Success<*> -> NoteViewState(data = NoteViewState.Data(note = it.data as? Note, isLoaded = true))
+                    is NoteResult.Error -> NoteViewState(error = it.error)
                 }
             }
-        })
+        }
+    }
+
+    fun delete() {
+        pendingNote?.let { note ->
+            noteInteractor.deleteNote(note.id).observeForever { result ->
+                viewStateLiveData.value = when (result) {
+                    is NoteResult.Success<*> -> NoteViewState(data = NoteViewState.Data(isDeleted = true))
+                    is NoteResult.Error -> NoteViewState(error = result.error)
+                }
+            }
+        }
     }
 
     override fun onCleared() {

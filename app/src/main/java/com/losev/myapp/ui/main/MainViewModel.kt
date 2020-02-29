@@ -1,14 +1,13 @@
 package com.losev.myapp.ui.main
 
 import androidx.lifecycle.Observer
-import com.losev.myapp.App
 import com.losev.myapp.domain.model.Note
 import com.losev.myapp.domain.model.NoteResult
+import com.losev.myapp.domain.usecases.NoteInteractor
 import com.losev.myapp.ui.base.BaseViewModel
 
-class MainViewModel : BaseViewModel<List<Note>?, MainViewState>() {
+class MainViewModel(private val noteInteractor: NoteInteractor) : BaseViewModel<List<Note>?, MainViewState>() {
 
-    private val noteInteractor = App.getNoteInteractor()
     private val notesObserver = object: Observer<NoteResult>{
         override fun onChanged(result: NoteResult?) {
             result ?: return
