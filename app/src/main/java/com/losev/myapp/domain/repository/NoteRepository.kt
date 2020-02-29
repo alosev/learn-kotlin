@@ -7,7 +7,8 @@ import com.losev.myapp.domain.model.User
 
 interface NoteRepository {
     fun getNotes(): LiveData<NoteResult>
-    fun getNote(id: String): LiveData<NoteResult>
+    fun getNote(noteId: String): LiveData<NoteResult>
     fun saveNote(note: Note): LiveData<NoteResult>
+    fun deleteNote(noteId: String): LiveData<NoteResult>
     fun getUser(): LiveData<User?>
 }

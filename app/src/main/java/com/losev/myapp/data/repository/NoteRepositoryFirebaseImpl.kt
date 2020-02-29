@@ -9,19 +9,15 @@ import com.losev.myapp.domain.model.NoteResult
 import com.losev.myapp.domain.model.User
 import com.losev.myapp.domain.repository.NoteRepository
 
-class NoteRepositoryFirebaseImpl() : NoteRepository {
+class NoteRepositoryFirebaseImpl(private val fireStore: FirebaseFirestore, private val firebaseAuth: FirebaseAuth) : NoteRepository {
 
     companion object {
         private const val NOTES_COLLECTION = "notes"
         private const val USER_COLLECTION = "users"
     }
 
-    private val fireStore by lazy {
-        FirebaseFirestore.getInstance()
-    }
-
     private val currentUser
-        get() = FirebaseAuth.getInstance().currentUser
+        get() = firebaseAuth.currentUser
 
     private val userNotesCollection
         get() = currentUser?.let { user ->
@@ -50,9 +46,9 @@ class NoteRepositoryFirebaseImpl() : NoteRepository {
         }
     }
 
-    override fun getNote(id: String) = MutableLiveData<NoteResult>().apply {
+    override fun getNote(noteId: String) = MutableLiveData<NoteResult>().apply {
         try {
-            userNotesCollection.document(id).get()
+            userNotesCollection.document(noteId).get()
                     .addOnSuccessListener { snapshot ->
                         value = NoteResult.Success(snapshot.toObject(Note::class.java))
                     }
@@ -78,4 +74,19 @@ class NoteRepositoryFirebaseImpl() : NoteRepository {
         }
     }
 
+    override fun deleteNote(noteId: String) = MutableLiveData<NoteResult>().apply {
+        try{
+            userNotesCollection.document(noteId).delete()
+                    .addOnSuccessListener {
+                        value = NoteResult.Success(true)
+                    }
+                    .addOnFailureListener { error ->
+                        throw error
+                    }
+
+        }
+        catch (e: Throwable){
+            value = NoteResult.Error(e)
+        }
+    }
 }
